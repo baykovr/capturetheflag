@@ -1,0 +1,42 @@
+# ---------------------------------------------------------
+Robert Baykov <baykovr@gmail.com>
+November 2014
+# ---------------------------------------------------------
+
+Kernel Target     : 2.6.26 
+Application Target: talkserver
+md5sum 49e6a2d663bc5498a6b797da77015a40 
+
+# ---------------------------------------------------------
+
+Compile:
+make
+
+Load with
+#insmod talk-shield.ko
+
+Unload with
+#rmmod talk-shield.ko
+
+See output:
+#dmesg
+
+WARNING: 
+Many TCP clients like to retransmit packets 
+if they do not receive a reply, for example our scanner 
+will. Unloading the module mid defense is not recommended,
+even if an initial attack is blocked.
+
+Incoming packets are hooked at NF_INET_PRE_ROUTING, 
+If the incoming packet is TCP destined for port 54321 
+and is greater than 160 bytes, we assume this is a 
+buffer overflow attempt and issue NF_DROP and print
+a massage to kernel log, view with dmesg.
+
+Regular traffic may pass unharmed NF_ACCEPT. 
+We also print the IP and payload size of whoever 
+sends benign traffic. 
+
+Oh, this will also detect nmap's half open SYN scan,
+watch for the benign message with a very small
+packet size.
